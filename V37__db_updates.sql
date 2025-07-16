@@ -1,0 +1,1 @@
+INSERT INTO `role_workcenter` (`role`, `workcenter`, `position`) VALUES ('SYSADMIN', 'cashup', '32');
