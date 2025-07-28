@@ -1,0 +1,8 @@
+CREATE TABLE message_queue (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, -- or AUTO_INCREMENT for MySQL
+    payload TEXT NOT NULL,
+    processed BOOLEAN DEFAULT FALSE,
+    retry_count INT DEFAULT 0,
+    next_attempt_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
