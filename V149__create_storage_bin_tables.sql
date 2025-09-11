@@ -13,8 +13,7 @@ CREATE TABLE storage_bin (
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     published       BOOLEAN DEFAULT FALSE,
-    UNIQUE (warehouse_id, aisle, rack, shelf) ,     -- ensure unique bin location
-    PRIMARY KEY (bin_id),
+    PRIMARY KEY (bin_id)
 );
 
 CREATE TABLE product_storage_bin (
