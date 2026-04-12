@@ -21,7 +21,7 @@ INSERT INTO number_sequence (id, seq_type, next_no)
 VALUES (1, 'PARTNER', 1000000001)
 ON DUPLICATE KEY UPDATE next_no = next_no;
 
-CREATE TABLE IF NOT EXISTS cashup_range_allocation (
+CREATE TABLE IF NOT EXISTS number_range_allocation (
   id            BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   device_id     VARCHAR(128) NOT NULL,
   from_no       BIGINT NOT NULL,
