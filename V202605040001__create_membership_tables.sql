@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS membership (
     id                  VARCHAR(255) NOT NULL PRIMARY KEY,
 
     -- Partner/person who owns the membership
-    member_id           CHAR(255) NOT NULL,
+    member_id           VARCHAR(255) NOT NULL,
 
     membership_no       VARCHAR(50) NOT NULL,
     plan_id             VARCHAR(255) NOT NULL,
