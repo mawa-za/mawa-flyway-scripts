@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS membership_plan (
-    id                  CHAR(36) NOT NULL PRIMARY KEY,
+    id                  CHAR(255) NOT NULL PRIMARY KEY,
     plan_code           VARCHAR(50) NOT NULL,
     name                VARCHAR(150) NOT NULL,
     description         TEXT,
@@ -20,13 +20,13 @@ CREATE TABLE IF NOT EXISTS membership_plan (
 );
 
 CREATE TABLE IF NOT EXISTS membership (
-    id                  CHAR(36) NOT NULL PRIMARY KEY,
+    id                  CHAR(255) NOT NULL PRIMARY KEY,
 
     -- Partner/person who owns the membership
-    member_id           CHAR(36) NOT NULL,
+    member_id           CHAR(255) NOT NULL,
 
     membership_no       VARCHAR(50) NOT NULL,
-    plan_id             CHAR(36) NOT NULL,
+    plan_id             CHAR(255) NOT NULL,
 
     start_date          DATE NOT NULL,
     end_date            DATE NULL,
@@ -59,10 +59,10 @@ CREATE TABLE IF NOT EXISTS membership (
 );
 
 CREATE TABLE IF NOT EXISTS membership_dependent (
-    id                  CHAR(36) NOT NULL PRIMARY KEY,
+    id                  CHAR(255) NOT NULL PRIMARY KEY,
 
-    membership_id       CHAR(36) NOT NULL,
-    dependent_partner_id CHAR(36) NOT NULL,
+    membership_id       CHAR(255) NOT NULL,
+    dependent_partner_id CHAR(255) NOT NULL,
 
     relationship        VARCHAR(50) NOT NULL,
     -- SPOUSE, CHILD, PARENT, EXTENDED_FAMILY, etc.
