@@ -1,4 +1,3 @@
-SET FOREIGN_KEY_CHECKS = 0;
 
 CREATE TABLE IF NOT EXISTS membership_plan (
     id                  VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -20,7 +19,8 @@ CREATE TABLE IF NOT EXISTS membership_plan (
     UNIQUE KEY uq_membership_plan_code (plan_code),
     INDEX idx_membership_plan_active (active)
 )ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  DEFAULT CHARACTER SET = utf8mb3
+  COLLATE = utf8mb3_general_ci;
 
 CREATE TABLE IF NOT EXISTS membership (
     id                  VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -60,7 +60,8 @@ CREATE TABLE IF NOT EXISTS membership (
     CONSTRAINT fk_membership_plan
         FOREIGN KEY (plan_id) REFERENCES membership_plan(id)
 )ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  DEFAULT CHARACTER SET = utf8mb3
+  COLLATE = utf8mb3_general_ci;
 
 CREATE TABLE IF NOT EXISTS membership_dependent (
     id                  VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -92,4 +93,5 @@ CREATE TABLE IF NOT EXISTS membership_dependent (
     CONSTRAINT fk_dependent_partner
         FOREIGN KEY (dependent_partner_id) REFERENCES partner(id)
 )ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  DEFAULT CHARACTER SET = utf8mb3
+  COLLATE = utf8mb3_general_ci;
