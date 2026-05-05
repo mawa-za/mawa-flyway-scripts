@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS membership_plan (
-    id                  CHAR(255) NOT NULL PRIMARY KEY,
+    id                  VARCHAR(255) NOT NULL PRIMARY KEY,
     plan_code           VARCHAR(50) NOT NULL,
     name                VARCHAR(150) NOT NULL,
     description         TEXT,
@@ -11,22 +11,22 @@ CREATE TABLE IF NOT EXISTS membership_plan (
     active              BOOLEAN NOT NULL DEFAULT TRUE,
 
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by          CHAR(36),
+    created_by          VARCHAR(36),
     updated_at          DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    updated_by          CHAR(36),
+    updated_by          VARCHAR(36),
 
     UNIQUE KEY uq_membership_plan_code (plan_code),
     INDEX idx_membership_plan_active (active)
 );
 
 CREATE TABLE IF NOT EXISTS membership (
-    id                  CHAR(255) NOT NULL PRIMARY KEY,
+    id                  VARCHAR(255) NOT NULL PRIMARY KEY,
 
     -- Partner/person who owns the membership
     member_id           CHAR(255) NOT NULL,
 
     membership_no       VARCHAR(50) NOT NULL,
-    plan_id             CHAR(255) NOT NULL,
+    plan_id             VARCHAR(255) NOT NULL,
 
     start_date          DATE NOT NULL,
     end_date            DATE NULL,
@@ -34,15 +34,15 @@ CREATE TABLE IF NOT EXISTS membership (
     status              VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
     -- ACTIVE, SUSPENDED, CANCELLED, LAPSED, DECEASED
 
-    paid_up_to_period   CHAR(6) NULL,
+    paid_up_to_period   VARCHAR(6) NULL,
     -- Format: YYYYMM, e.g. 202605
 
     join_date           DATE NULL,
 
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by          CHAR(36),
+    created_by          VARCHAR(36),
     updated_at          DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    updated_by          CHAR(36),
+    updated_by          VARCHAR(36),
 
     UNIQUE KEY uq_membership_no (membership_no),
 
@@ -59,10 +59,10 @@ CREATE TABLE IF NOT EXISTS membership (
 );
 
 CREATE TABLE IF NOT EXISTS membership_dependent (
-    id                  CHAR(255) NOT NULL PRIMARY KEY,
+    id                  VARCHAR(255) NOT NULL PRIMARY KEY,
 
-    membership_id       CHAR(255) NOT NULL,
-    dependent_partner_id CHAR(255) NOT NULL,
+    membership_id       VARCHAR(255) NOT NULL,
+    dependent_partner_id VARCHAR(255) NOT NULL,
 
     relationship        VARCHAR(50) NOT NULL,
     -- SPOUSE, CHILD, PARENT, EXTENDED_FAMILY, etc.
@@ -70,9 +70,9 @@ CREATE TABLE IF NOT EXISTS membership_dependent (
     active              BOOLEAN NOT NULL DEFAULT TRUE,
 
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by          CHAR(36),
+    created_by          VARCHAR(36),
     updated_at          DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    updated_by          CHAR(36),
+    updated_by          VARCHAR(36),
 
     UNIQUE KEY uq_membership_dependent (
         membership_id,
