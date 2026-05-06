@@ -19,6 +19,7 @@ SELECT DISTINCT
   CONCAT(COALESCE(`main_partner`.`name1`,''),' ',COALESCE(`main_partner`.`name2`,''),' ',COALESCE(`main_partner`.`name3`,'')) AS `main_partner`,
   `employee`.`id` AS `employee_responsible_id`,
   CONCAT(COALESCE(`employee`.`name1`,''),' ',COALESCE(`employee`.`name2`,''),' ',COALESCE(`employee`.`name3`,'')) AS `employee_responsible`,
+  `recipient`.`id` AS `recipient_id`,
   CONCAT(COALESCE(`recipient`.`name1`,''),' ',COALESCE(`recipient`.`name2`,''),' ',COALESCE(`recipient`.`name3`,'')) AS `recipient`,
   `created_by`.`id` AS `created_by_id`,
   CONCAT(COALESCE(`created_by`.`name1`,''),' ',COALESCE(`created_by`.`name2`,''),' ',COALESCE(`created_by`.`name3`,'')) AS `created_by`,
