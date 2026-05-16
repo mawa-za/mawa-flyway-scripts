@@ -57,7 +57,9 @@ CREATE TABLE IF NOT EXISTS membership_claim (
     CONSTRAINT fk_membership_claim_claimant_partner
         FOREIGN KEY (claimant_partner_id)
         REFERENCES partner(id)
-);
+)ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8mb3
+  COLLATE = utf8mb3_general_ci;
 
 CREATE TABLE IF NOT EXISTS membership_claim_link (
     id                  VARCHAR(255) NOT NULL PRIMARY KEY,

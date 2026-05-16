@@ -17,7 +17,10 @@ CREATE TABLE IF NOT EXISTS module_usage_event (
     INDEX idx_module_usage_event_module_code (module_code),
     INDEX idx_module_usage_event_used_at (used_at),
     INDEX idx_module_usage_event_user_used_at (user_id, used_at)
-);
+)
+ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8mb3
+  COLLATE = utf8mb3_general_ci;
 
 CREATE TABLE IF NOT EXISTS user_module_usage (
     id                  VARCHAR(255) NOT NULL PRIMARY KEY,
@@ -44,4 +47,6 @@ CREATE TABLE IF NOT EXISTS user_module_usage (
     INDEX idx_user_module_usage_module_code (module_code),
     INDEX idx_user_module_usage_usage_count (usage_count),
     INDEX idx_user_module_usage_last_used_at (last_used_at)
-);
+)ENGINE = InnoDB
+  DEFAULT CHARACTER SET = utf8mb3
+  COLLATE = utf8mb3_general_ci;
