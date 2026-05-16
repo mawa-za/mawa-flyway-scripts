@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS membership_claim (
 
     CONSTRAINT fk_membership_claim_membership
         FOREIGN KEY (membership_id)
-        REFERENCES membership(id)
+        REFERENCES membership(id),
 
     -- Enable only if partner.id is compatible with these columns.
     CONSTRAINT fk_membership_claim_deceased_partner
