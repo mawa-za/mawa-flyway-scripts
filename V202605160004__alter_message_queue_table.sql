@@ -47,4 +47,4 @@ CREATE INDEX idx_message_queue_reference_id
     ON message_queue (reference_id);
 
 CREATE UNIQUE INDEX uq_message_queue_type_reference
-    ON message_queue (type, reference_id);
+    ON message_queue (message_type, reference_id);
