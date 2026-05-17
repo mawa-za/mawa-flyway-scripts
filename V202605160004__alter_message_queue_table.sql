@@ -24,16 +24,16 @@ ALTER TABLE payment_request
 
 
 
-CREATE INDEX IF NOT EXISTS idx_payment_request_approved_at
+CREATE INDEX idx_payment_request_approved_at
     ON payment_request (approved_at);
 
-CREATE INDEX IF NOT EXISTS idx_payment_request_queued_for_payment_at
+CREATE INDEX idx_payment_request_queued_for_payment_at
     ON payment_request (queued_for_payment_at);
 
-CREATE INDEX IF NOT EXISTS idx_payment_request_paid_at
+CREATE INDEX idx_payment_request_paid_at
     ON payment_request (paid_at);
 
-CREATE INDEX IF NOT EXISTS idx_payment_request_bank_message_reference
+CREATE INDEX idx_payment_request_bank_message_reference
     ON payment_request (bank_message_reference);
 
 
@@ -43,8 +43,8 @@ ALTER TABLE message_queue
 ALTER TABLE message_queue
     ADD COLUMN reference_no VARCHAR(100) NULL;
 
-CREATE INDEX IF NOT EXISTS idx_message_queue_reference_id
+CREATE INDEX idx_message_queue_reference_id
     ON message_queue (reference_id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS uq_message_queue_type_reference
+CREATE UNIQUE INDEX uq_message_queue_type_reference
     ON message_queue (type, reference_id);
