@@ -99,6 +99,12 @@ ALTER TABLE `user` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_g
 ALTER TABLE `user_module_usage` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ALTER TABLE `user_role` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
+ALTER TABLE `invoice_line` 
+DROP FOREIGN KEY `fk_invoice_line_invoice`;
+
+ALTER TABLE `invoice_payment` 
+DROP FOREIGN KEY `fk_invoice_payment_invoice`;
+
 ALTER TABLE `invoice` 
 CHANGE COLUMN `id` `id` VARCHAR(255) NOT NULL ,
 CHANGE COLUMN `partner_id` `partner_id` VARCHAR(255) NOT NULL ,
