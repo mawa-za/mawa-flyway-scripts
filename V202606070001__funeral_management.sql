@@ -1,3 +1,10 @@
+ALTER TABLE `invoice` 
+CHANGE COLUMN `id` `id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL ,
+CHANGE COLUMN `partner_id` `partner_id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL ,
+CHANGE COLUMN `created_by` `created_by` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NULL DEFAULT NULL ,
+CHANGE COLUMN `updated_by` `updated_by` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NULL DEFAULT NULL ;
+
+
 ALTER TABLE `invoice_payment` 
 DROP FOREIGN KEY `fk_invoice_payment_invoice`;
 ALTER TABLE `invoice_payment` 
