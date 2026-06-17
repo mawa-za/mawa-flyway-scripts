@@ -38,12 +38,6 @@ ALTER TABLE `employment` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf
 ALTER TABLE `field` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ALTER TABLE `field_option` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ALTER TABLE `flyway_schema_history` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
-ALTER TABLE `funeral_external_membership_cover` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
-ALTER TABLE `funeral_mortuary_inventory` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
-ALTER TABLE `funeral_package` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
-ALTER TABLE `funeral_pickup_request` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
-ALTER TABLE `funeral_service` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
-ALTER TABLE `funeral_service_claim` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ALTER TABLE `generated_id` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ALTER TABLE `group_society` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
 ALTER TABLE `group_society_account_txn` ENGINE=InnoDB DEFAULT CHARACTER SET=utf8mb3 COLLATE=utf8mb3_general_ci;
