@@ -1,18 +1,32 @@
+ALTER TABLE `invoice_line` 
+DROP FOREIGN KEY `fk_invoice_line_invoice`;
+
+ALTER TABLE `invoice_payment` 
+DROP FOREIGN KEY `fk_invoice_payment_invoice`;
+
 ALTER TABLE `invoice` 
 CHANGE COLUMN `id` `id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL ,
 CHANGE COLUMN `partner_id` `partner_id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL ,
 CHANGE COLUMN `created_by` `created_by` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NULL DEFAULT NULL ,
 CHANGE COLUMN `updated_by` `updated_by` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NULL DEFAULT NULL ;
 
-
-ALTER TABLE `invoice_payment` 
-DROP FOREIGN KEY `fk_invoice_payment_invoice`;
 ALTER TABLE `invoice_payment` 
 CHANGE COLUMN `id` `id` VARCHAR(255) NOT NULL ,
 CHANGE COLUMN `invoice_id` `invoice_id` VARCHAR(255) NOT NULL ,
 CHANGE COLUMN `created_by` `created_by` VARCHAR(255) NULL DEFAULT NULL ;
 ALTER TABLE `invoice_payment` 
 ADD CONSTRAINT `fk_invoice_payment_invoice`
+  FOREIGN KEY (`invoice_id`)
+  REFERENCES `invoice` (`id`)
+  ON DELETE CASCADE;
+
+
+ALTER TABLE `invoice_line` 
+CHANGE COLUMN `id` `id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL ,
+CHANGE COLUMN `invoice_id` `invoice_id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NOT NULL ,
+CHANGE COLUMN `product_id` `product_id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_0900_ai_ci' NULL ;
+ALTER TABLE `invoice_line` 
+ADD CONSTRAINT `fk_invoice_line_invoice`
   FOREIGN KEY (`invoice_id`)
   REFERENCES `invoice` (`id`)
   ON DELETE CASCADE;
