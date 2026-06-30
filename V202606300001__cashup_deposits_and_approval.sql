@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS cashup_deposit (
     id VARCHAR(255) NOT NULL,
     cashup_id VARCHAR(255) NOT NULL,
@@ -18,7 +19,49 @@ CREATE TABLE IF NOT EXISTS cashup_deposit (
 DEFAULT CHARACTER SET = utf8mb3
 COLLATE = utf8mb3_general_ci;
 
-ALTER TABLE cashup
-    ADD COLUMN IF NOT EXISTS deposit_total_cents BIGINT NOT NULL DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS deposit_count INT NOT NULL DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS approval_request_id VARCHAR(255) NULL;
+SET @schema_name = DATABASE();
+
+SET @sql = (
+    SELECT IF(
+        COUNT(*) = 0,
+        'ALTER TABLE cashup ADD COLUMN deposit_total_cents BIGINT NOT NULL DEFAULT 0',
+        'SELECT 1'
+    )
+    FROM information_schema.columns
+    WHERE table_schema = @schema_name
+      AND table_name = 'cashup'
+      AND column_name = 'deposit_total_cents'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @sql = (
+    SELECT IF(
+        COUNT(*) = 0,
+        'ALTER TABLE cashup ADD COLUMN deposit_count INT NOT NULL DEFAULT 0',
+        'SELECT 1'
+    )
+    FROM information_schema.columns
+    WHERE table_schema = @schema_name
+      AND table_name = 'cashup'
+      AND column_name = 'deposit_count'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @sql = (
+    SELECT IF(
+        COUNT(*) = 0,
+        'ALTER TABLE cashup ADD COLUMN approval_request_id VARCHAR(255) NULL',
+        'SELECT 1'
+    )
+    FROM information_schema.columns
+    WHERE table_schema = @schema_name
+      AND table_name = 'cashup'
+      AND column_name = 'approval_request_id'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
