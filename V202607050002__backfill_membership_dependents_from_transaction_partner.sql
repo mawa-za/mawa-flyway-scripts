@@ -29,9 +29,9 @@ SELECT
         ELSE TRUE
     END                     AS active,
     COALESCE(tp.date_added, m.created_at, CURRENT_TIMESTAMP) AS created_at,
-    COALESCE(tp.createdBy, m.created_by)                     AS created_by,
+    COALESCE(tp.created_by, m.created_by)                     AS created_by,
     COALESCE(tp.date_effective, m.updated_at, m.created_at, CURRENT_TIMESTAMP) AS updated_at,
-    COALESCE(tp.changedBy, m.updated_by, tp.createdBy, m.created_by)           AS updated_by
+    COALESCE(tp.changed_by, m.updated_by, tp.created_by, m.created_by)           AS updated_by
 FROM membership m
 JOIN transaction_partner tp
     ON tp.transaction = m.old_id
