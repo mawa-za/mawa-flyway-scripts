@@ -384,69 +384,95 @@ INSERT INTO group_society (
 )
 SELECT
     REPLACE(UUID(), '-', '') AS id,
-    customer.partner AS partner_id,
-    LEFT(COALESCE(NULLIF(TRIM(t.number), ''), NULLIF(TRIM(t.no), ''), CONCAT('MIG-GRP-', t.id)), 50) AS group_no,
-    LEFT(COALESCE(NULLIF(TRIM(t.sub_type), ''), 'BURIAL_SOCIETY'), 50) AS society_type,
-    CASE
-        WHEN UPPER(TRIM(COALESCE(t.status, ''))) IN ('SUSPENDED') THEN 'SUSPENDED'
-        WHEN UPPER(TRIM(COALESCE(t.status, ''))) IN ('CLOSED', 'CANCELLED', 'CANCELED', 'TERMINATED', 'INACTIVE') THEN 'CLOSED'
-        ELSE 'ACTIVE'
-    END AS status,
-    COALESCE(CAST(ROUND(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('AVAILABLE-BALANCE', 'AVAILABLE_BALANCE') THEN ta.amount END) * 100, 0) AS SIGNED), 0) AS available_balance_cents,
-    COALESCE(CAST(ROUND(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-DEPOSITED', 'TOTAL_DEPOSITED') THEN ta.amount END) * 100, 0) AS SIGNED), 0) AS total_paid_cents,
-    COALESCE(CAST(ROUND(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-WITHDRAWN', 'TOTAL_WITHDRAWN') THEN ta.amount END) * 100, 0) AS SIGNED), 0) AS total_claimed_cents,
-    DATE(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-DEPOSITED', 'TOTAL_DEPOSITED') THEN COALESCE(t.valid_from, CURRENT_DATE) END)) AS last_payment_date,
-    DATE(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-WITHDRAWN', 'TOTAL_WITHDRAWN') THEN COALESCE(t.valid_from, CURRENT_DATE) END)) AS last_claim_date,
-    t.id AS legacy_transaction_id,
-    COALESCE(created_date.value, t.valid_from, CURRENT_TIMESTAMP) AS created_at,
-    COALESCE(t.created_by, 'legacy-migration') AS created_by,
-    COALESCE(last_updated.value, t.valid_to, created_date.value, t.valid_from, CURRENT_TIMESTAMP) AS updated_at,
-    COALESCE(t.changed_by, t.created_by, 'legacy-migration') AS updated_by
-FROM `transaction` t
-JOIN (
-    SELECT transaction, partner
+    source.partner_id,
+    source.group_no,
+    source.society_type,
+    source.status,
+    source.available_balance_cents,
+    source.total_paid_cents,
+    source.total_claimed_cents,
+    source.last_payment_date,
+    source.last_claim_date,
+    source.legacy_transaction_id,
+    source.created_at,
+    source.created_by,
+    source.updated_at,
+    source.updated_by
+FROM (
+    SELECT
+        candidate.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY candidate.partner_id
+            ORDER BY candidate.created_at DESC, candidate.updated_at DESC, candidate.legacy_transaction_id
+        ) AS partner_rank
     FROM (
         SELECT
-            tp.transaction,
-            tp.partner,
-            ROW_NUMBER() OVER (
-                PARTITION BY tp.transaction
-                ORDER BY FIELD(UPPER(TRIM(tp.partner_function)), 'CUSTOMER', 'MAIN-MEMBER', 'MAINMEMBER', 'CLIENT'), tp.partner
-            ) AS rn
-        FROM transaction_partner tp
-        WHERE UPPER(TRIM(tp.partner_function)) IN ('CUSTOMER', 'MAIN-MEMBER', 'MAINMEMBER', 'CLIENT')
-          AND tp.partner IS NOT NULL
-          AND TRIM(tp.partner) <> ''
-    ) ranked_partner
-    WHERE rn = 1
-) customer
-  ON customer.transaction = t.id
-JOIN partner p
-  ON p.id = customer.partner
-LEFT JOIN transaction_amount ta
-  ON ta.transaction = t.id
-LEFT JOIN (
-    SELECT transaction, MIN(value) AS value
-    FROM transaction_date
-    WHERE UPPER(TRIM(type)) IN ('CREATED', 'CREATION-DATE')
-    GROUP BY transaction
-) created_date
-  ON created_date.transaction = t.id
-LEFT JOIN (
-    SELECT transaction, MAX(value) AS value
-    FROM transaction_date
-    WHERE UPPER(TRIM(type)) IN ('LAST-UPDATED', 'LAST_UPDATED')
-    GROUP BY transaction
-) last_updated
-  ON last_updated.transaction = t.id
-LEFT JOIN group_society existing_group
-  ON existing_group.legacy_transaction_id = t.id
-  OR existing_group.partner_id = customer.partner
-WHERE UPPER(TRIM(t.type)) = 'GROUP-SOCIETY'
-  AND existing_group.id IS NULL
-GROUP BY
-    t.id, t.number, t.no, t.sub_type, t.status, t.valid_from, t.valid_to, t.created_by, t.changed_by,
-    customer.partner, created_date.value, last_updated.value;
+            customer.partner AS partner_id,
+            LEFT(COALESCE(NULLIF(TRIM(t.number), ''), NULLIF(TRIM(t.no), ''), CONCAT('MIG-GRP-', t.id)), 50) AS group_no,
+            LEFT(COALESCE(NULLIF(TRIM(t.sub_type), ''), 'BURIAL_SOCIETY'), 50) AS society_type,
+            CASE
+                WHEN UPPER(TRIM(COALESCE(t.status, ''))) IN ('SUSPENDED') THEN 'SUSPENDED'
+                WHEN UPPER(TRIM(COALESCE(t.status, ''))) IN ('CLOSED', 'CANCELLED', 'CANCELED', 'TERMINATED', 'INACTIVE') THEN 'CLOSED'
+                ELSE 'ACTIVE'
+            END AS status,
+            COALESCE(CAST(ROUND(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('AVAILABLE-BALANCE', 'AVAILABLE_BALANCE') THEN ta.amount END) * 100, 0) AS SIGNED), 0) AS available_balance_cents,
+            COALESCE(CAST(ROUND(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-DEPOSITED', 'TOTAL_DEPOSITED') THEN ta.amount END) * 100, 0) AS SIGNED), 0) AS total_paid_cents,
+            COALESCE(CAST(ROUND(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-WITHDRAWN', 'TOTAL_WITHDRAWN') THEN ta.amount END) * 100, 0) AS SIGNED), 0) AS total_claimed_cents,
+            DATE(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-DEPOSITED', 'TOTAL_DEPOSITED') THEN COALESCE(t.valid_from, CURRENT_DATE) END)) AS last_payment_date,
+            DATE(MAX(CASE WHEN UPPER(TRIM(ta.type)) IN ('TOTAL-WITHDRAWN', 'TOTAL_WITHDRAWN') THEN COALESCE(t.valid_from, CURRENT_DATE) END)) AS last_claim_date,
+            t.id AS legacy_transaction_id,
+            COALESCE(created_date.value, t.valid_from, CURRENT_TIMESTAMP) AS created_at,
+            COALESCE(t.created_by, 'legacy-migration') AS created_by,
+            COALESCE(last_updated.value, t.valid_to, created_date.value, t.valid_from, CURRENT_TIMESTAMP) AS updated_at,
+            COALESCE(t.changed_by, t.created_by, 'legacy-migration') AS updated_by
+        FROM `transaction` t
+        JOIN (
+            SELECT transaction, partner
+            FROM (
+                SELECT
+                    tp.transaction,
+                    tp.partner,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY tp.transaction
+                        ORDER BY FIELD(UPPER(TRIM(tp.partner_function)), 'CUSTOMER', 'MAIN-MEMBER', 'MAINMEMBER', 'CLIENT'), tp.partner
+                    ) AS rn
+                FROM transaction_partner tp
+                WHERE UPPER(TRIM(tp.partner_function)) IN ('CUSTOMER', 'MAIN-MEMBER', 'MAINMEMBER', 'CLIENT')
+                  AND tp.partner IS NOT NULL
+                  AND TRIM(tp.partner) <> ''
+            ) ranked_partner
+            WHERE rn = 1
+        ) customer
+          ON customer.transaction = t.id
+        JOIN partner p
+          ON p.id = customer.partner
+        LEFT JOIN transaction_amount ta
+          ON ta.transaction = t.id
+        LEFT JOIN (
+            SELECT transaction, MIN(value) AS value
+            FROM transaction_date
+            WHERE UPPER(TRIM(type)) IN ('CREATED', 'CREATION-DATE')
+            GROUP BY transaction
+        ) created_date
+          ON created_date.transaction = t.id
+        LEFT JOIN (
+            SELECT transaction, MAX(value) AS value
+            FROM transaction_date
+            WHERE UPPER(TRIM(type)) IN ('LAST-UPDATED', 'LAST_UPDATED')
+            GROUP BY transaction
+        ) last_updated
+          ON last_updated.transaction = t.id
+        LEFT JOIN group_society existing_group
+          ON existing_group.legacy_transaction_id = t.id
+          OR existing_group.partner_id = customer.partner
+        WHERE UPPER(TRIM(t.type)) = 'GROUP-SOCIETY'
+          AND existing_group.id IS NULL
+        GROUP BY
+            t.id, t.number, t.no, t.sub_type, t.status, t.valid_from, t.valid_to, t.created_by, t.changed_by,
+            customer.partner, created_date.value, last_updated.value
+    ) candidate
+) source
+WHERE source.partner_rank = 1;
 
 /* Link group societies to migrated memberships where legacy transaction links point to memberships. */
 INSERT IGNORE INTO group_society_member (
@@ -478,13 +504,32 @@ SELECT DISTINCT
     COALESCE(tl.created_by, m.created_by, 'legacy-migration') AS created_by,
     m.updated_at AS updated_at,
     m.updated_by AS updated_by
-FROM group_society gs
-JOIN (
+FROM (
     SELECT transaction1, transaction2, MIN(type) AS type, MIN(creation_date) AS creation_date, MIN(created_by) AS created_by
     FROM transaction_link
     GROUP BY transaction1, transaction2
 ) tl
-  ON tl.transaction1 = gs.legacy_transaction_id
+JOIN (
+    SELECT transaction, partner
+    FROM (
+        SELECT
+            tp.transaction,
+            tp.partner,
+            ROW_NUMBER() OVER (
+                PARTITION BY tp.transaction
+                ORDER BY FIELD(UPPER(TRIM(tp.partner_function)), 'CUSTOMER', 'MAIN-MEMBER', 'MAINMEMBER', 'CLIENT'), tp.partner
+            ) AS rn
+        FROM transaction_partner tp
+        WHERE UPPER(TRIM(tp.partner_function)) IN ('CUSTOMER', 'MAIN-MEMBER', 'MAINMEMBER', 'CLIENT')
+          AND tp.partner IS NOT NULL
+          AND TRIM(tp.partner) <> ''
+    ) ranked_group_partner
+    WHERE rn = 1
+) group_customer
+  ON group_customer.transaction = tl.transaction1
+JOIN group_society gs
+  ON gs.legacy_transaction_id = tl.transaction1
+  OR gs.partner_id = group_customer.partner
 JOIN membership m
   ON m.old_id = tl.transaction2
 LEFT JOIN group_society_member gsm
@@ -1182,6 +1227,18 @@ UNION ALL
 SELECT 'V202607080002', 'migrated_payment_requests', COUNT(*), 'Rows in payment_request with legacy_transaction_id populated' FROM payment_request WHERE legacy_transaction_id IS NOT NULL AND TRIM(legacy_transaction_id) <> ''
 UNION ALL
 SELECT 'V202607080002', 'legacy_group_society_transactions', COUNT(*), 'Old transaction rows where type=GROUP-SOCIETY' FROM `transaction` WHERE UPPER(TRIM(type)) = 'GROUP-SOCIETY'
+UNION ALL
+SELECT 'V202607080002', 'legacy_group_society_duplicate_partner_transactions', COALESCE(SUM(duplicate_count), 0), 'GROUP-SOCIETY transactions skipped because one group_society row is allowed per partner' FROM (
+    SELECT GREATEST(COUNT(*) - 1, 0) AS duplicate_count
+    FROM `transaction` t
+    JOIN transaction_partner tp
+      ON tp.transaction = t.id
+     AND UPPER(TRIM(tp.partner_function)) IN ('CUSTOMER', 'MAIN-MEMBER', 'MAINMEMBER', 'CLIENT')
+    WHERE UPPER(TRIM(t.type)) = 'GROUP-SOCIETY'
+      AND tp.partner IS NOT NULL
+      AND TRIM(tp.partner) <> ''
+    GROUP BY tp.partner
+) duplicate_group_society_partners
 UNION ALL
 SELECT 'V202607080002', 'migrated_group_societies', COUNT(*), 'Rows in group_society with legacy_transaction_id populated' FROM group_society WHERE legacy_transaction_id IS NOT NULL AND TRIM(legacy_transaction_id) <> ''
 UNION ALL

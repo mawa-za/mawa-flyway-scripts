@@ -145,3 +145,36 @@ Recommended order:
 3. Review `legacy_domain_migration_audit` and validation queries.
 4. Run user acceptance checks in ERP for memberships, claims, payment requests, group societies and cashups.
 5. Roll out to the remaining tenant schemas.
+
+## 2026-07-09 fix: duplicate group society partner rows
+
+Some legacy tenants contain more than one `GROUP-SOCIETY` transaction for the same group/customer partner. The new `group_society` table intentionally has a unique constraint on `partner_id`, so the migration now ranks legacy group-society candidates by partner and migrates only one `group_society` row per partner.
+
+The skipped duplicate legacy transactions are still reported in the audit metric:
+
+```sql
+SELECT *
+FROM legacy_domain_migration_audit
+WHERE migration_name = 'V202607080002'
+  AND metric_name = 'legacy_group_society_duplicate_partner_transactions';
+```
+
+Membership links from duplicate legacy group-society transactions are still resolved through the partner mapping so related memberships can attach to the single migrated `group_society` row.
+
+If Flyway left a failed schema-history row after the earlier failed deployment, repair the affected tenant schema before redeploying the corrected script:
+
+```sql
+SELECT installed_rank, version, description, success
+FROM flyway_schema_history
+WHERE version = '202607080002';
+```
+
+If `success = 0`, run Flyway repair for that tenant schema, or remove only the failed row before restarting the service:
+
+```sql
+DELETE FROM flyway_schema_history
+WHERE version = '202607080002'
+  AND success = 0;
+```
+
+Do not insert a manual success row. Let the corrected migration run normally.
